@@ -150,7 +150,33 @@ ifdef INFO
 DOCS += docs/texi/allegro.$(TEXI) docs/info/allegro.$(INFO)
 endif
 
+define RM_CLEAN
+      $(foreach file, $(wildcard $(OBJ_CLEAN_FILES)), -del $(subst /,\,$(file))
+      )
+      $(foreach file, $(wildcard $(OTHER_CLEAN_FILES)), -del $(subst /,\,$(file))
+      )
+endef
 
+define RM_VERYCLEAN
+      $(foreach file, $(wildcard $(VERYCLEAN_FILES)), -del $(subst /,\,$(file))
+      )
+endef
+
+define RM_DISTCLEAN
+      $(foreach file, $(wildcard $(DISTCLEAN_FILES)), -del $(subst /,\,$(file))
+      )
+endef
+
+define MKDIRS
+   $(foreach dir,$(INSTALL_DIRS),\
+      misc\mdhelper.bat $(dir)
+   )
+endef
+
+define RM_FILES
+      $(foreach file, $(UNINSTALL_FILES), del $(subst /,\,$(file))
+      )
+endef
 
 # -------- top level boss targets like "default" and "all" --------
 
@@ -253,12 +279,6 @@ ifdef UNIX_TOOLS
 	-rm $(RM_OPTS) $(OBJ_CLEAN_FILES)
 	-rm $(RM_OPTS) $(OTHER_CLEAN_FILES)
 else
-   define RM_CLEAN
-      $(foreach file, $(wildcard $(OBJ_CLEAN_FILES)), -del $(subst /,\,$(file))
-      )
-      $(foreach file, $(wildcard $(OTHER_CLEAN_FILES)), -del $(subst /,\,$(file))
-      )
-   endef
 	-$(RM_CLEAN)
 endif
 
@@ -266,10 +286,6 @@ distclean: clean $(ADDON_DISTCLEAN_TARGETS)
 ifdef UNIX_TOOLS
 	-rm $(RM_OPTS) $(DISTCLEAN_FILES)
 else
-   define RM_DISTCLEAN
-      $(foreach file, $(wildcard $(DISTCLEAN_FILES)), -del $(subst /,\,$(file))
-      )
-   endef
 	-$(RM_DISTCLEAN)
 endif
 
@@ -277,10 +293,6 @@ veryclean: distclean $(ADDON_VERYCLEAN_TARGETS)
 ifdef UNIX_TOOLS
 	-rm $(RM_OPTS) $(VERYCLEAN_FILES)
 else
-   define RM_VERYCLEAN
-      $(foreach file, $(wildcard $(VERYCLEAN_FILES)), -del $(subst /,\,$(file))
-      )
-   endef
 	-$(RM_VERYCLEAN)
 endif
 
@@ -310,11 +322,6 @@ create-install-dirs:
 ifdef UNIX_TOOLS
 	misc/mdhelper.sh $(INSTALL_DIRS)
 else
-   define MKDIRS
-   $(foreach dir,$(INSTALL_DIRS),\
-      misc\mdhelper.bat $(dir)
-   )
-   endef
 	$(MKDIRS)
 endif
 
@@ -400,10 +407,6 @@ ifdef UNIX_TOOLS
 	-rmdir $(INSTALLDIR_U)/$(INCDIR_U)/allegro/internal
 	-rmdir $(INSTALLDIR_U)/$(INCDIR_U)/allegro
 else
-   define RM_FILES
-      $(foreach file, $(UNINSTALL_FILES), del $(subst /,\,$(file))
-      )
-   endef
 	-$(RM_FILES)
 	-rd $(INSTALLDIR_D)\$(INCDIR_D)\allegro\platform
 	-rd $(INSTALLDIR_D)\$(INCDIR_D)\allegro\inline
